@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="assets/css/style.css" />
+  </head>
+
+  <body>
+    <!-- TOP BAR -->
+    <div class="topbar">
+      <b>Admin Dashboard</b>
+      <div>
+        <button onclick="openAddCategory()">Category</button>
+        <button onclick="openAddProduct()">Product</button>
+        <button onclick="location.href='admin-users.html'">
+          Assign Access
+        </button>
+        <button onclick="logout()">Logout</button>
+      </div>
+    </div>
+
+    <div class="layout">
+      <!-- LEFT -->
+      <aside id="cats">
+        <p class="hint">Click a category</p>
+      </aside>
+
+      <!-- RIGHT -->
+      <main id="products">
+        <div class="empty">Select a category to view products</div>
+      </main>
+    </div>
+
+    <!-- ADD CATEGORY MODAL -->
+    <div id="catModal" class="modal">
+      <div class="modal-box">
+        <h3>Add Category</h3>
+        <input id="catName" placeholder="Category name" />
+        <textarea id="catDesc" placeholder="Description"></textarea>
+        <div class="actions">
+          <button onclick="saveCategory()">Save</button>
+          <button onclick="closeModal()">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- add pro modal -->
+    <div id="prodModal" class="modal">
+      <div class="modal-box">
+        <h3>Add Product</h3>
+
+        <input id="pName" placeholder="Product name" />
+        <input id="pSku" placeholder="SKU" />
+        <input id="pPrice" placeholder="Price" />
+        <input type="file" id="pImage" />
+        <textarea id="pDesc" placeholder="Description"></textarea>
+        <select id="pCat"></select>
+
+        <div class="actions">
+          <button onclick="saveProduct()">Save</button>
+          <button onclick="closeModal()">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const API =
+        window.location.origin +
+        "/freelance_projectsss/test_project_1/backend/api";
+
+      /* Load categories */
+      function loadCategories() {
+        fetch(`${API}/categories/list.php`)
+          .then((r) => r.json())
+          .then((d) => {
+            cats.innerHTML = '<p class="hint">Click a category</p>';
+            pCat.innerHTML = "";
+            d.data.forEach((c) => {
+              cats.innerHTML += `
+  <div class="cat-row">
+    <button class="cat-btn" onclick="loadProducts(${c.id})">${c.name}</button>
+    <button onclick="editCategory(${c.id},'${c.name}','${
+                c.description || ""
+              }')">edit</button>
+    <button onclick="deleteCategory(${c.id})">del</button>
+  </div>
+`;
+              pCat.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+            });
+          });
+      }
+      loadCategories();
+
+      /* load productss */
+      function loadProducts(id) {
+        fetch(`${API}/products/list.php?category_id=${id}`)
+          .then((r) => r.json())
+          .then((d) => {
+            products.innerHTML = "";
+            if (d.data.length === 0) {
+              products.innerHTML = "<p class='empty'>No products yet</p>";
+              return;
+            }
+            d.data.forEach((p) => {
+              products.innerHTML += `
+  <div class="card">
+    ${p.image ? `<img src="../backend/uploads/products/${p.image}">` : ""}
+    <h3>${p.name}</h3>
+    <p>${p.description}</p>
+    <b>Rs ${p.price}</b>
+
+    <div class="actions">
+      <button onclick="editProduct(${p.id},
+        '${p.name}','${p.sku}','${p.description}','${p.price}',
+        '${p.category_id}')">edit</button>
+
+      <button onclick="deleteProduct(${p.id})">del</button>
+    </div>
+  </div>
+`;
+            });
+          });
+      }
+
+      /* CATEGORY */
+      function openAddCategory() {
+        catModal.style.display = "flex";
+      }
+      function saveCategory() {
+        fetch(`${API}/categories/create.php`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: catName.value,
+            description: catDesc.value,
+          }),
+        }).then(() => {
+          closeModal();
+          loadCategories();
+        });
+      }
+
+      /* PRODUCT (IMAGE FIXED) */
+      function openAddProduct() {
+        prodModal.style.display = "flex";
+      }
+      function saveProduct() {
+        let fd = new FormData();
+
+        fd.append("category_id", pCat.value);
+        fd.append("name", pName.value);
+        fd.append("sku", pSku.value);
+        fd.append("description", pDesc.value);
+        fd.append("price", pPrice.value);
+
+        if (pImage.files.length > 0) {
+          fd.append("image", pImage.files[0]);
+        }
+
+        fetch(`${API}/products/create.php`, {
+          method: "POST",
+          body: fd,
+        })
+          .then((r) => r.json())
+          .then((d) => {
+            alert(d.message);
+            closeModal();
+            loadCategories();
+          });
+      }
+
+      function closeModal() {
+        catModal.style.display = "none";
+        prodModal.style.display = "none";
+      }
+
+      function logout() {
+        fetch(`${API}/auth/logout.php`).then(
+          () => (location.href = "login.html")
+        );
+      }
+
+      // category edit and del
+
+      function editCategory(id, name, desc) {
+        catName.value = name;
+        catDesc.value = desc;
+        catModal.style.display = "flex";
+        catModal.dataset.edit = id;
+      }
+
+      function saveCategory() {
+        let payload = {
+          name: catName.value,
+          description: catDesc.value,
+        };
+
+        if (catModal.dataset.edit) {
+          payload.id = catModal.dataset.edit;
+          fetch(`${API}/categories/update.php`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          }).then(() => location.reload());
+        } else {
+          fetch(`${API}/categories/create.php`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          }).then(() => location.reload());
+        }
+      }
+
+      function deleteCategory(id) {
+        if (!confirm("Delete category?")) return;
+        fetch(`${API}/categories/delete.php`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id }),
+        }).then(() => location.reload());
+      }
+
+      /* product edit and delete */
+
+      function editProduct(id, name, sku, desc, price, cat) {
+        pName.value = name;
+        pSku.value = sku;
+        pDesc.value = desc;
+        pPrice.value = price;
+        pCat.value = cat;
+
+        prodModal.dataset.edit = id;
+        prodModal.style.display = "flex";
+      }
+
+      function saveProduct() {
+        let fd = new FormData();
+
+        fd.append("category_id", pCat.value);
+        fd.append("name", pName.value);
+        fd.append("sku", pSku.value);
+        fd.append("description", pDesc.value);
+        fd.append("price", pPrice.value);
+
+        if (pImage.files.length) {
+          fd.append("image", pImage.files[0]);
+        }
+
+        let url = `${API}/products/create.php`;
+
+        if (prodModal.dataset.edit) {
+          fd.append("id", prodModal.dataset.edit);
+          url = `${API}/products/update.php`;
+        }
+
+        fetch(url, { method: "POST", body: fd })
+          .then((r) => r.json())
+          .then((d) => {
+            alert(d.message);
+            prodModal.dataset.edit = "";
+            closeModal();
+            loadCategories();
+          });
+      }
+
+      function deleteProduct(id) {
+        if (!confirm("Delete product?")) return;
+
+        fetch(`${API}/products/delete.php`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id }),
+        }).then(() => loadCategories());
+      }
+    </script>
+  </body>
+</html>

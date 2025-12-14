@@ -1,0 +1,209 @@
+.form-box {
+    width: 360px;
+    margin: 100px auto;
+    background: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, .15);
+}
+
+.form-box h2 {
+    text-align: center;
+}
+
+.form-box input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 12px;
+}
+
+.form-box button {
+    width: 100%;
+    padding: 12px;
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.form-box a {
+    color: #2563eb;
+    text-decoration: none;
+}
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px;
+    background: #111827;
+    color: #fff;
+}
+
+.topbar button {
+    margin-left: 8px
+}
+
+.cat-btn {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+.hint {
+    color: #aaa;
+    font-size: 13px
+}
+
+.empty {
+    color: #666;
+    text-align: center;
+    margin-top: 50px
+}
+
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .4);
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-box {
+    background: #fff;
+    padding: 20px;
+    width: 300px;
+    border-radius: 10px;
+}
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: #111827;
+    color: #fff;
+}
+
+.topbar button {
+    margin-left: 8px;
+    padding: 8px 12px;
+}
+
+.layout {
+    display: flex
+}
+
+aside {
+    width: 240px;
+    padding: 15px;
+    background: #f3f4f6;
+}
+
+.cat-btn {
+    width: 100%;
+    margin-bottom: 8px;
+    padding: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+main {
+    flex: 1;
+    padding: 20px
+}
+
+.card {
+    background: #fff;
+    padding: 15px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+}
+
+.card img {
+    width: 120px;
+    height: 80px;
+    object-fit: contain;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.hint {
+    color: #666;
+    font-size: 13px
+}
+
+.empty {
+    text-align: center;
+    color: #777;
+    margin-top: 50px
+}
+
+.modal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    background: rgba(0, 0, 0, .4);
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-box {
+    background: #fff;
+    padding: 20px;
+    width: 320px;
+    border-radius: 10px;
+}
+
+.modal-box input,
+.modal-box textarea,
+.modal-box select {
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 8px;
+}
+
+.actions {
+    text-align: right
+}
+
+.checklist {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 8px;
+}
+
+.check-item {
+    background: #f3f4f6;
+    padding: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.check-item input {
+    margin-right: 6px;
+}
+
+.cat-row {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.cat-row button {
+    padding: 6px;
+}
+
+.actions {
+    margin-top: 10px;
+    display: flex;
+    gap: 6px;
+}
+
+.actions button {
+    padding: 6px 8px;
+}

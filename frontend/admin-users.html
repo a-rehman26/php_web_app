@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Assign Admin Permissions</title>
+    <link rel="stylesheet" href="assets/css/style.css" />
+  </head>
+  <body>
+    <!-- TOP BAR (SAME AS DASHBOARD) -->
+    <div class="topbar">
+      <b>Admin Access Control</b>
+      <div>
+        <button onclick="location.href='index.html'">Dashboard</button>
+        <button onclick="logout()">Logout</button>
+      </div>
+    </div>
+
+    <div class="layout">
+      <!-- LEFT PANEL -->
+      <aside>
+        <h3>Select Admin</h3>
+        <select id="admin" style="width: 100%; padding: 8px"></select>
+
+        <p class="hint" style="margin-top: 10px">
+          Select an admin and assign access
+        </p>
+      </aside>
+
+      <!-- RIGHT PANEL -->
+      <main>
+        <div class="card">
+          <h3>Categories Access</h3>
+          <div id="cats" class="checklist"></div>
+        </div>
+
+        <div class="card">
+          <h3>Products Access</h3>
+          <div id="prods" class="checklist"></div>
+        </div>
+
+        <button onclick="save()" style="margin-top: 15px">
+          Save Permissions
+        </button>
+
+        <p id="msg"></p>
+      </main>
+    </div>
+
+    <script>
+      const API =
+        window.location.origin +
+        "/freelance_projectsss/test_project_1/backend/api";
+
+      /* LOAD ADMINS */
+      fetch(`${API}/users/list.php`)
+        .then((r) => r.json())
+        .then((d) => {
+          admin.innerHTML = d.data
+            .map((a) => `<option value="${a.id}">${a.username}</option>`)
+            .join("");
+        });
+
+      /* LOAD CATEGORIES */
+      fetch(`${API}/categories/list.php`)
+        .then((r) => r.json())
+        .then((d) => {
+          cats.innerHTML = d.data
+            .map(
+              (c) => `
+    <label class="check-item">
+      <input type="checkbox" value="${c.id}"> ${c.name}
+    </label>
+  `
+            )
+            .join("");
+        });
+
+      /* LOAD PRODUCTS */
+      fetch(`${API}/products/list.php`)
+        .then((r) => r.json())
+        .then((d) => {
+          prods.innerHTML = d.data
+            .map(
+              (p) => `
+    <label class="check-item">
+      <input type="checkbox" value="${p.id}"> ${p.name}
+    </label>
+  `
+            )
+            .join("");
+        });
+
+      /* SAVE */
+      function save() {
+        fetch(`${API}/users/assign_permissions.php`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            admin_id: admin.value,
+            categories: [...cats.querySelectorAll("input:checked")].map(
+              (i) => i.value
+            ),
+            products: [...prods.querySelectorAll("input:checked")].map(
+              (i) => i.value
+            ),
+          }),
+        })
+          .then((r) => r.json())
+          .then(() => {
+            msg.innerText = "Permissions Assigned Successfully";
+          });
+      }
+
+      function logout() {
+        fetch(`${API}/auth/logout.php`).then(
+          () => (location.href = "login.html")
+        );
+      }
+    </script>
+  </body>
+</html>
